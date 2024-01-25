@@ -92,7 +92,9 @@ TOKEN :
     < DEF: "default">|
     < FOR: "for"> |
     < FUNC: "func"> |
-    < RET: "return">
+    < RET: "return"> |
+    < ENUM: "enum"> |
+    < BREAK: "break">
 	// À compléter au besoin
 }
 
@@ -162,7 +164,7 @@ void Block() #void : {}
 
 void Stmt() #void : {}
 {
-	AssignStmt() <SEMICOLON> | ForStmt() | IfStmt() | WhileStmt() | DoWhileStmt() <SEMICOLON>
+	AssignStmt() <SEMICOLON> | ForStmt() | IfStmt() | WhileStmt() | DoWhileStmt() <SEMICOLON> | EnumStmt() | SwitchStmt()
 }
 
 void AssignStmt() : {}
@@ -217,6 +219,35 @@ void DoWhileStmt() : {}
 <DO> WhileBlock() WhileCond()
 }
 
+void EnumStmt() : {}
+{
+<ENUM> Identifier() <LACC> Identifier() (<COMMA> Identifier())* <RACC>
+}
+
+void SwitchStmt() : {}
+{
+<SWITCH> <LPAREN> Identifier() <RPAREN> <LACC> (CaseStmt())+ [DefaultStmt()] <RACC>
+}
+
+void CaseStmt() : {}
+{
+<CASE> BasicExpr() <COLON> CaseBlock()
+}
+
+void DefaultStmt() : {}
+{
+<DEF> <COLON> CaseBlock()
+}
+
+void CaseBlock() #void : {}
+{
+(Block() [BreakStmt()]) #CaseBlock(>0)
+}
+
+void BreakStmt() : {}
+{
+<BREAK> <SEMICOLON>
+}
 
 // ---------- STATEMENTS END ----------
 
